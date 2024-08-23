@@ -12,13 +12,13 @@ const globalErrorHandler = require('./controllers/error.controller');
 //Routes
 const authRouter = require('./routes/auth.routes');
 const userRouter = require('./routes/users.routes');
-const newRouter = require('./routes/news.routes');
+// const newRouter = require('./routes/news.routes');
 
-const categoryNews = require('./routes/category_news.routes');
-const carouselRouter = require('./routes/carousel.routes');
-const featuredRouter = require('./routes/featureds.routes');
-const extrainfoRouter = require('./routes/xtraInfo.routes');
-const carouselCompanion = require('./routes/carousel-companion.routes');
+// const categoryNews = require('./routes/category_news.routes');
+// const carouselRouter = require('./routes/carousel.routes');
+// const featuredRouter = require('./routes/featureds.routes');
+// const extrainfoRouter = require('./routes/xtraInfo.routes');
+// const carouselCompanion = require('./routes/carousel-companion.routes');
 
 const app = express();
 
@@ -51,12 +51,7 @@ if (process.env.NODE_ENV === 'development') {
 //Use routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/news', newRouter);
-app.use('/api/v1/category_news', categoryNews);
-app.use('/api/v1/carousels', carouselRouter);
-app.use('/api/v1/featureds', featuredRouter);
-app.use('/api/v1/extraInfo', extrainfoRouter);
-app.use('/api/v1/carouselCompanion', carouselCompanion);
+// app.use('/api/v1/news', newRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

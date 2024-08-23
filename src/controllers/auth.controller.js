@@ -55,6 +55,37 @@ exports.loginUsers = catchAsync(async (req, res, next) => {
   }
 });
 
+exports.loginSuper_admin = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await db.SuperAdmin.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    return res.status(401).json({
+      message: 'User not found',
+    });
+  }
+
+  const checkPassword = await compare(password, user.password);
+  const tokenSession = await tokenSign(user);
+
+  if (checkPassword) {
+    res.cookie(tokenSession, 'usuario_autenticado', { maxAge: 900000, httpOnly: true });
+    return res.status(200).json({
+      user,
+      tokenSession,
+    });
+  } else {
+    return res.status(401).json({
+      message: 'Incorrect email or password',
+    });
+  }
+});
+
 exports.logoutUser = catchAsync(async (req, res, next) => {
   const token = req.headers.authorization.split(' ').pop();
   // const miCookie = req.cookies[token];
