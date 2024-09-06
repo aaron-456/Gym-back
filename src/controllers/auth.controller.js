@@ -23,74 +23,16 @@ exports.registerUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.loginUsers = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
+exports.registerTenant = catchAsync(async (req, res, nex) => {
+  const { first_name, last_name, email, password, schema_name } = req.body;
 
-  const user = await db.users.findOne({
-    where: {
-      email,
-    },
+  const result = authService.createTenantAndUser({
+    first_name,
+    last_name,
+    email,
+    password,
+    tenant_name,
   });
 
-  if (!user) {
-    return res.status(401).json({
-      message: 'Administrator not found',
-    });
-  }
-
-  const checkPassword = await compare(password, user.password);
-  const tokenSession = await tokenSign(user);
-
-  if (checkPassword) {
-    res.cookie(tokenSession, 'usuario_autenticado', { maxAge: 900000, httpOnly: true });
-    return res.status(200).json({
-      user,
-      tokenSession,
-      role: user.role,
-    });
-  } else {
-    return res.status(401).json({
-      message: 'Incorrect email or password',
-    });
-  }
-});
-
-exports.loginSuper_admin = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-
-  const user = await db.SuperAdmin.findOne({
-    where: {
-      email,
-    },
-  });
-
-  if (!user) {
-    return res.status(401).json({
-      message: 'User not found',
-    });
-  }
-
-  const checkPassword = await compare(password, user.password);
-  const tokenSession = await tokenSign(user);
-
-  if (checkPassword) {
-    res.cookie(tokenSession, 'usuario_autenticado', { maxAge: 900000, httpOnly: true });
-    return res.status(200).json({
-      user,
-      tokenSession,
-    });
-  } else {
-    return res.status(401).json({
-      message: 'Incorrect email or password',
-    });
-  }
-});
-
-exports.logoutUser = catchAsync(async (req, res, next) => {
-  const token = req.headers.authorization.split(' ').pop();
-  // const miCookie = req.cookies[token];
-  res.clearCookie(token);
-  return res.status(401).json({
-    message: 'sesion cerrada con exito',
-  });
+  return res.status().json({ message: 'Tenant and user created', result });
 });

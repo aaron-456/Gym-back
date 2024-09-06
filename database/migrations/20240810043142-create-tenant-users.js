@@ -38,6 +38,17 @@ module.exports = {
           defaultValue: true,
         },
 
+        tenant_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'tenant',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
+        },
+
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,

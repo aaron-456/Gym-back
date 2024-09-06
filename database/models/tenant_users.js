@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.tenant, {
+        foreignKey: 'tenant_id', // Clave foránea en UserAccount
+        as: 'tenant', // Alias para la relación
+      });
     }
   }
   tenant_users.init(
@@ -44,6 +47,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+      },
+      tenant_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Tenant',
+          key: 'id',
+        },
       },
     },
     {
