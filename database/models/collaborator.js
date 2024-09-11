@@ -1,20 +1,17 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class tenant_users extends Model {
+  class Collaborator extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Tenant, {
-        foreignKey: 'tenant_id', // Clave foránea en UserAccount
-        as: 'tenant', // Alias para la relación
-      });
+      // define association here
     }
   }
-  tenant_users.init(
+  Collaborator.init(
     {
       id: {
         allowNull: false,
@@ -43,25 +40,24 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
 
-      status: {
-        type: DataTypes.BOOLEAN,
+      role: {
+        type: DataTypes.ENUM,
+        values: ['Admin', 'Coach', 'Receptionist'],
         allowNull: false,
-        defaultValue: true,
       },
-      tenant_id: {
-        type: DataTypes.INTEGER,
+      createdAt: {
         allowNull: false,
-        references: {
-          model: 'tenant',
-          key: 'id',
-        },
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
       },
     },
     {
       sequelize,
-      modelName: 'tenant_users',
-      schema: 'tenants',
+      modelName: 'Collaborator',
     }
   );
-  return tenant_users;
+  return Collaborator;
 };

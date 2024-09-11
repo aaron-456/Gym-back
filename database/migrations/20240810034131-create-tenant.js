@@ -18,15 +18,24 @@ module.exports = {
           unique: true,
           allowNull: false,
         },
-        is_active: {
+
+        address: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+
+        status: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
           defaultValue: true,
         },
-        created_at: {
-          type: Sequelize.DATE,
+        createdAt: {
           allowNull: false,
-          defaultValue: Sequelize.NOW,
+          type: Sequelize.DATE,
+        },
+        updatedAt: {
+          allowNull: false,
+          type: Sequelize.DATE,
         },
       },
       {

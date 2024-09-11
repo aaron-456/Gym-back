@@ -1,20 +1,18 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  class tenant extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class Tenant extends Model {
     static associate(models) {
+      // Asociación con tenant_users
       this.hasMany(models.tenant_users, {
-        foreignKey: 'tenant_id', // Clave foránea en UserAccount
+        foreignKey: 'tenant_id', // Clave foránea en tenant_users
         as: 'users', // Alias para la relación
       });
     }
   }
-  tenant.init(
+
+  Tenant.init(
     {
       id: {
         allowNull: false,
@@ -35,12 +33,23 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize,
-      modelName: 'tenant',
-      schema: 'tenants',
+      modelName: 'Tenant', // Cambiado a PascalCase
+      schema: 'tenants', // Esquema en la base de datos
+      tableName: 'tenant', // Nombre de la tabla en la base de datos
     }
   );
-  return tenant;
+
+  return Tenant;
 };
