@@ -6,11 +6,12 @@ module.exports = {
       'tenant_users',
       {
         id: {
-          allowNull: false,
-          autoIncrement: true,
+          type: Sequelize.UUID,
+          defaultValue: Sequelize.UUIDV4,
           primaryKey: true,
-          type: Sequelize.INTEGER,
+          allowNull: false,
         },
+
         first_name: {
           type: Sequelize.STRING,
           allowNull: false,
@@ -39,7 +40,8 @@ module.exports = {
         },
 
         tenant_id: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.UUID,
+          defaultValue: Sequelize.UUIDV4,
           allowNull: false,
           references: {
             model: 'tenant',

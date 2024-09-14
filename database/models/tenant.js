@@ -15,10 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   Tenant.init(
     {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       schema_name: {
         type: DataTypes.STRING,
@@ -32,6 +32,12 @@ module.exports = (sequelize, DataTypes) => {
       address: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+
+      short_id: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        unique: true,
       },
 
       createdAt: {

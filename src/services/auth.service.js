@@ -1,22 +1,46 @@
 const db = require('../../database/models/index');
+const crypto = require('crypto');
+
 const { Sequelize } = require('sequelize');
 
 class AuthService {
+  async generateUniqueShortId() {
+    let shortId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      shortId = crypto.randomBytes(4).toString('hex').toUpperCase();
+      const existingTenant = await db.Tenant.findOne({ where: { short_id: shortId } });
+      if (!existingTenant) {
+        isUnique = true;
+      }
+    }
+
+    return shortId;
+  }
+
   async createTenantAndUser(tenantData, userData) {
     try {
       // Empieza una transacción para asegurar que ambas operaciones se realicen o ninguna.
       const result = await db.Tenant.sequelize.transaction(async (t) => {
-        // Primero creamos el tenant
+        const shortId = await this.generateUniqueShortId();
+
+        tenantData.short_id = shortId;
+
+        // creamos el tenant
         const newTenant = await db.Tenant.create(tenantData, { transaction: t });
 
+        const schemaName = `${tenantData.schema_name
+          .toLowerCase()
+          .replace(/\s+/g, '_')}_${newTenant.id}`;
+
         // Crear el esquema en la base de datos
-        await db.Tenant.sequelize.query(
-          `CREATE SCHEMA IF NOT EXISTS "${newTenant.schema_name}"`,
-          { transaction: t }
-        );
+        await db.Tenant.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`, {
+          transaction: t,
+        });
 
         // Modificar el modelo de Tenant para usar el nuevo esquema
-        db.Tenant.schema = newTenant.schema_name;
+        db.Tenant.schema = schemaName;
 
         // Luego creamos el usuario y asociamos el tenant
         const newUser = await db.tenant_users.create(
@@ -26,9 +50,7 @@ class AuthService {
 
         // se dice a sequelice donde se creara las migraciones ,en este caso en el nuevo schema generado
 
-        const newSchema = newTenant.schema_name;
-
-        const collaboratorModel = db.Collaborator.schema(newSchema);
+        const collaboratorModel = db.Collaborator.schema(schemaName);
 
         await collaboratorModel.sync({ transaction: t });
 

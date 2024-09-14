@@ -17,10 +17,10 @@ module.exports = (sequelize, DataTypes) => {
   tenant_users.init(
     {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       first_name: {
         type: DataTypes.STRING,

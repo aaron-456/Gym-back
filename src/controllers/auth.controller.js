@@ -23,6 +23,8 @@ exports.registerUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.loginUser = catchAsync(async (req, res, nex) => {});
+
 exports.registerTenant = catchAsync(async (req, res, nex) => {
   const { tenantData, userData } = req.body;
 
