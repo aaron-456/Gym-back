@@ -1,7 +1,9 @@
 const db = require('../../database/models/index');
 const crypto = require('crypto');
-
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
+const { encrypt, compare } = require('../utils/handleBcrypt');
+const { tokenSign } = require('../utils/generateToken');
+//const { BucketAlreadyOwnedByYou } = require('@aws-sdk/client-s3');
 
 class AuthService {
   async generateUniqueShortId() {
@@ -42,6 +44,8 @@ class AuthService {
         // Modificar el modelo de Tenant para usar el nuevo esquema
         db.Tenant.schema = schemaName;
 
+        const passwordHash = await encrypt(userData.password);
+
         // Luego creamos el usuario y asociamos el tenant
         const newUser = await db.tenant_users.create(
           { ...userData, tenant_id: newTenant.id },
@@ -59,7 +63,7 @@ class AuthService {
             first_name: userData.first_name,
             last_name: userData.last_name,
             email: userData.email,
-            password: userData.password,
+            password: passwordHash,
             role: 'Admin',
           },
           { transaction: t }
@@ -74,6 +78,42 @@ class AuthService {
 
       throw new Error('Error al crear el tenant y el usuario.');
     }
+  }
+
+  async loginUser(short_id, email, password) {
+    const tenant = await db.Tenant.findOne({ where: { short_id } });
+
+    if (!tenant) {
+      throw new Error('Gym not found');
+    }
+
+    // Construir el nombre del esquema basado en el nombre del tenant y su ID
+    const schemaName = `${tenant.schema_name.toLowerCase().replace(/\s+/g, '_')}_${
+      tenant.id
+    }`;
+
+    console.log('Schema Name:', schemaName);
+
+    const userModel = db.Collaborator.schema(schemaName);
+
+    const user = await userModel.findOne({ where: { email } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    console.log('Password from request:', password);
+    console.log('Hashed password from database:', user.password);
+
+    const isPasswordValid = await compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error('Invalid credentials');
+    }
+
+    const token = await tokenSign(user);
+
+    return { user, token, schemaName };
   }
 }
 

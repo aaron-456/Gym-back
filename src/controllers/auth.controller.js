@@ -23,7 +23,22 @@ exports.registerUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.loginUser = catchAsync(async (req, res, nex) => {});
+exports.loginUser = catchAsync(async (req, res, nex) => {
+  const { short_id, email, password } = req.body;
+
+  const { user, token, schemaName } = await authService.loginUser(
+    short_id,
+    email,
+    password
+  );
+
+  return res.status(200).json({
+    message: 'Login successful',
+    user,
+    token,
+    schema: schemaName,
+  });
+});
 
 exports.registerTenant = catchAsync(async (req, res, nex) => {
   const { tenantData, userData } = req.body;
