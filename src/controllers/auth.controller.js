@@ -2,7 +2,7 @@ const AuthService = require('../services/auth.service');
 const { encrypt, compare } = require('../utils/handleBcrypt');
 const catchAsync = require('../utils/cachAsync');
 const db = require('../../database/models/index');
-const { tokenSign } = require('../utils/generateToken');
+const { tokenSign } = require('../utils/tokenUtils');
 // const bcrypt = require('bcrypt');
 
 const authService = new AuthService();

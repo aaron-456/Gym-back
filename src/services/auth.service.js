@@ -2,7 +2,7 @@ const db = require('../../database/models/index');
 const crypto = require('crypto');
 const { Sequelize, where } = require('sequelize');
 const { encrypt, compare } = require('../utils/handleBcrypt');
-const { tokenSign } = require('../utils/generateToken');
+const { tokenSign } = require('../utils/tokenUtils');
 //const { BucketAlreadyOwnedByYou } = require('@aws-sdk/client-s3');
 
 class AuthService {
